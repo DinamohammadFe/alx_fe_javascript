@@ -6,6 +6,13 @@
     <title>Dynamic Quote Generator</title>
   </head>
   <body>
+    <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+<input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+<button onclick="addQuote()">Add Quote</button>
+
+<input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
+<button onclick="exportToJsonFile()">Export Quotes</button>
+
     <h1>Dynamic Quote Generator</h1>
 
     <div id="quoteDisplay"></div>
