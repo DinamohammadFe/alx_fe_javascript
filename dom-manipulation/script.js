@@ -1,51 +1,102 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const quotes = [
-    {
-      text: "The only way to do great work is to love what you do.",
-      category: "Motivation",
-    },
-    {
-      text: "Life is what happens when you're busy making other plans.",
-      category: "Life",
-    },
-    {
-      text: "In the middle of difficulty lies opportunity.",
-      category: "Inspiration",
-    },
-  ];
+// Initialize quotes array
+let quotes = [];
 
-  const quoteDisplay = document.getElementById("quoteDisplay");
-  const newQuoteBtn = document.getElementById("newQuote");
-  const addQuoteBtn = document.getElementById("addQuote");
+// Load quotes from localStorage or use default
+function loadQuotes() {
+  const stored = localStorage.getItem('quotes');
+  if (stored) {
+    quotes = JSON.parse(stored);
+  } else {
+    // Default quotes
+    quotes = [
+      { text: "Life is what happens when you're busy making other plans.", category: "Life" },
+      { text: "The purpose of our lives is to be happy.", category: "Happiness" }
+    ];
+    saveQuotes();
+  }
+}
 
-  function showRandomQuote() {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    const quote = quotes[randomIndex];
-    quoteDisplay.innerHTML = `
-            <p>"${quote.text}"</p>
-            <small><em>Category: ${quote.category}</em></small>
-        `;
+// Save quotes to localStorage
+function saveQuotes() {
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// Display a random quote
+function showRandomQuote() {
+  if (quotes.length === 0) {
+    document.getElementById('quoteDisplay').textContent = "No quotes available.";
+    return;
   }
 
-  function addQuote() {
-    const textInput = document.getElementById("newQuoteText");
-    const categoryInput = document.getElementById("newQuoteCategory");
+  const random = quotes[Math.floor(Math.random() * quotes.length)];
+  const display = `${random.text} — [${random.category}]`;
+  document.getElementById('quoteDisplay').textContent = display;
 
-    const text = textInput.value.trim();
-    const category = categoryInput.value.trim();
+  // Save last shown quote in sessionStorage
+  sessionStorage.setItem('lastQuote', display);
+}
 
-    if (text === "" || category === "") {
-      alert("Please enter both quote and category.");
-      return;
+// Add a new quote
+function addQuote() {
+  const text = document.getElementById('newQuoteText').value.trim();
+  const category = document.getElementById('newQuoteCategory').value.trim();
+
+  if (!text || !category) {
+    alert("Please enter both a quote and a category.");
+    return;
+  }
+
+  quotes.push({ text, category });
+  saveQuotes();
+  alert("Quote added!");
+  document.getElementById('newQuoteText').value = '';
+  document.getElementById('newQuoteCategory').value = '';
+}
+
+// Export quotes as JSON file
+function exportToJsonFile() {
+  const blob = new Blob([JSON.stringify(quotes, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quotes.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+// Import quotes from JSON file
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+
+  fileReader.onload = function(e) {
+    try {
+      const importedQuotes = JSON.parse(e.target.result);
+      if (Array.isArray(importedQuotes)) {
+        quotes.push(...importedQuotes);
+        saveQuotes();
+        alert("Quotes imported successfully!");
+      } else {
+        throw new Error("Invalid format");
+      }
+    } catch {
+      alert("Failed to import quotes. Please check your JSON file.");
     }
+  };
 
-    const newQuote = { text, category };
-    quotes.push(newQuote);
-    textInput.value = "";
-    categoryInput.value = "";
-    alert("Quote added!");
+  fileReader.readAsText(event.target.files[0]);
+}
+
+// Load everything on page load
+document.addEventListener('DOMContentLoaded', () => {
+  loadQuotes();
+
+  // Show last viewed quote if any
+  const lastQuote = sessionStorage.getItem('lastQuote');
+  if (lastQuote) {
+    document.getElementById('quoteDisplay').textContent = lastQuote;
   }
 
-  newQuoteBtn.addEventListener("click", showRandomQuote);
-  addQuoteBtn.addEventListener("click", addQuote);
+  document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 });
