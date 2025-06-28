@@ -1,84 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dynamic Quote Generator</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-        max-width: 700px;
-        margin: auto;
-      }
-      #quoteDisplay {
-        font-size: 1.2em;
-        margin: 20px 0;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border-left: 5px solid #007acc;
-      }
-      .button-group,
-      .input-group {
-        margin-top: 20px;
-      }
-      input {
-        margin-right: 10px;
-        padding: 5px;
-      }
-      button {
-        padding: 6px 12px;
-        cursor: pointer;
-      }
-      #notification {
-        color: green;
-        margin: 10px 0;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Dynamic Quote Generator</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dynamic Quote Generator</title>
+</head>
+<body>
+  <h1>Dynamic Quote Generator</h1>
 
-    <div id="notification"></div>
+  <!-- Notification area -->
+  <div id="notification" style="color: green; margin-bottom: 10px;"></div>
 
-    <div id="quoteDisplay">Loading quote...</div>
+  <!-- Category filter -->
+  <div>
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter" onchange="filterQuotes()">
+      <option value="all">All Categories</option>
+    </select>
+  </div>
 
-    <div class="button-group">
-      <label for="categoryFilter">Filter by Category:</label>
-      <select id="categoryFilter" onchange="filterQuotes()">
-        <option value="all">All Categories</option>
-        <!-- JS will populate more -->
-      </select>
-      <button id="newQuote">Show New Quote</button>
-    </div>
+  <!-- Quote display -->
+  <div id="quoteDisplay" style="margin: 20px 0;">Loading quote...</div>
+  <button id="newQuote">Show New Quote</button>
 
-    <div class="input-group">
-      <h2>Add New Quote</h2>
-      <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
-      <input
-        id="newQuoteCategory"
-        type="text"
-        placeholder="Enter quote category"
-      />
-      <button onclick="addQuote()">Add Quote</button>
-    </div>
+  <!-- Add new quote -->
+  <h2>Add New Quote</h2>
+  <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+  <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+  <button onclick="addQuote()">Add Quote</button>
 
-    <div class="button-group">
-      <h2>Import/Export</h2>
-      <button onclick="exportToJsonFile()">Export Quotes</button>
-      <input
-        type="file"
-        id="importFile"
-        accept=".json"
-        onchange="importFromJsonFile(event)"
-      />
-    </div>
-
-    <div class="button-group">
-      <h2>Sync with Server</h2>
-      <button onclick="manualSync()">Sync Now</button>
-    </div>
-
-    <script src="script.js"></script>
-  </body>
-</html>
+  <!-- Export/Import -->
+  <div style="margin-top: 20px;">
+    <button onclick="exportToJsonFile()">Export Quotes</button>
+    <input type="f
