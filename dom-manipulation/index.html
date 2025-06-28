@@ -8,28 +8,16 @@
 <body>
   <h1>Dynamic Quote Generator</h1>
 
-  <!-- Notification area -->
+  <!-- ✅ Notification area -->
   <div id="notification" style="color: green; margin-bottom: 10px;"></div>
 
-  <!-- Category filter -->
+  <!-- ✅ Filter dropdown -->
   <div>
     <label for="categoryFilter">Filter by Category:</label>
     <select id="categoryFilter" onchange="filterQuotes()">
       <option value="all">All Categories</option>
+      <!-- Categories populated by JS -->
     </select>
   </div>
 
-  <!-- Quote display -->
-  <div id="quoteDisplay" style="margin: 20px 0;">Loading quote...</div>
-  <button id="newQuote">Show New Quote</button>
-
-  <!-- Add new quote -->
-  <h2>Add New Quote</h2>
-  <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
-  <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
-  <button onclick="addQuote()">Add Quote</button>
-
-  <!-- Export/Import -->
-  <div style="margin-top: 20px;">
-    <button onclick="exportToJsonFile()">Export Quotes</button>
-    <input type="f
+  <!-- ✅ Display area -
