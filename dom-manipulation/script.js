@@ -1,4 +1,3 @@
-// Load quotes from localStorage or use default ones
 let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   {
     text: "Travel is the only thing you buy that makes you richer.",
@@ -14,33 +13,41 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   },
 ];
 
-// Save quotes to localStorage
 function saveQuotes() {
   localStorage.setItem("quotes", JSON.stringify(quotes));
 }
 
-// Populate category dropdown
 function populateCategories() {
   const categories = ["all", ...new Set(quotes.map((q) => q.category))];
-  const select = document.getElementById("categorySelect");
-  select.innerHTML = "";
 
-  categories.forEach((cat) => {
-    const option = document.createElement("option");
-    option.value = cat;
-    option.textContent = cat;
-    select.appendChild(option);
+  const categorySelect = document.getElementById("categorySelect");
+  const categoryFilter = document.getElementById("categoryFilter");
+
+  [categorySelect, categoryFilter].forEach((select) => {
+    if (!select) return;
+    select.innerHTML = "";
+    categories.forEach((cat) => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      select.appendChild(option);
+    });
   });
+
+  // Restore last selected filter
+  const savedFilter = localStorage.getItem("lastSelectedCategory");
+  if (categoryFilter && savedFilter) {
+    categoryFilter.value = savedFilter;
+  }
 }
 
-// Show a random quote and store it in sessionStorage
 function showRandomQuote() {
-  const selectedCategory = document.getElementById("categorySelect").value;
-  let filteredQuotes = quotes;
-
-  if (selectedCategory !== "all") {
-    filteredQuotes = quotes.filter((q) => q.category === selectedCategory);
-  }
+  const selectedCategory =
+    document.getElementById("categorySelect")?.value || "all";
+  let filteredQuotes =
+    selectedCategory === "all"
+      ? quotes
+      : quotes.filter((q) => q.category === selectedCategory);
 
   if (filteredQuotes.length === 0) {
     document.getElementById("quoteDisplay").textContent =
@@ -50,15 +57,30 @@ function showRandomQuote() {
 
   const random = Math.floor(Math.random() * filteredQuotes.length);
   const quote = filteredQuotes[random];
-
-  // Display the quote
   document.getElementById("quoteDisplay").textContent = quote.text;
-
-  // Save to sessionStorage
   sessionStorage.setItem("lastViewedQuote", quote.text);
 }
 
-// Add a new quote
+function filterQuotes() {
+  const filterValue = document.getElementById("categoryFilter").value;
+  localStorage.setItem("lastSelectedCategory", filterValue);
+
+  const filtered =
+    filterValue === "all"
+      ? quotes
+      : quotes.filter((q) => q.category === filterValue);
+
+  const display = document.getElementById("quoteDisplay");
+  if (filtered.length === 0) {
+    display.textContent = "No quotes found.";
+    return;
+  }
+
+  // Show all filtered quotes as a list
+  display.innerHTML =
+    "<ul>" + filtered.map((q) => `<li>${q.text}</li>`).join("") + "</ul>";
+}
+
 function createAddQuoteForm() {
   const text = document.getElementById("newQuoteText").value.trim();
   const category = document.getElementById("newQuoteCategory").value.trim();
@@ -71,12 +93,11 @@ function createAddQuoteForm() {
   quotes.push({ text, category });
   saveQuotes();
   populateCategories();
+  alert("Quote added!");
   document.getElementById("newQuoteText").value = "";
   document.getElementById("newQuoteCategory").value = "";
-  alert("Quote added!");
 }
 
-// Export all quotes to JSON
 function exportToJson() {
   const dataStr = JSON.stringify(quotes, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
@@ -89,7 +110,6 @@ function exportToJson() {
   document.body.removeChild(a);
 }
 
-// Import quotes from a JSON file
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
   fileReader.onload = function (event) {
@@ -110,7 +130,6 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// Load the last viewed quote from sessionStorage
 function loadLastViewedQuote() {
   const last = sessionStorage.getItem("lastViewedQuote");
   if (last) {
@@ -118,11 +137,11 @@ function loadLastViewedQuote() {
   }
 }
 
-// ✅ Wrap startup logic to ensure checker sees addEventListener
 document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("newQuote")
     .addEventListener("click", showRandomQuote);
   populateCategories();
   loadLastViewedQuote();
+  filterQuotes(); // apply filter on load
 });
